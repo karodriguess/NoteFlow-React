@@ -1,35 +1,144 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useState, useEffect } from 'react'
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [pessoas, setPessoas] = useState(() => {
+    const stored = localStorage.getItem('pessoas')
+    return stored ? JSON.parse(stored) : []
+  })
+
+  const [formVisible, setFormVisible] = useState(false)
+  const [nome, setNome] = useState('')
+  const [email, setEmail] = useState('')
+  const [telefone, setTelefone] = useState('')
+  const [busca, setBusca] = useState('')
+  const [editandoId, setEditandoId] = useState(null)
+
+  useEffect(() => {
+    localStorage.setItem('pessoas', JSON.stringify(pessoas))
+  }, [pessoas])
+
+  const pessoasFiltradas = pessoas.filter(p =>
+    p.nome.toLowerCase().includes(busca.toLowerCase())
+  )
+
+  function gerarProximoId() {
+    if (pessoas.length === 0) return 1
+    const ids = pessoas.map(p => p.id)
+    return Math.max(...ids) + 1
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault()
+    if (!nome.trim() || !email.trim() || !telefone.trim()) return
+
+    if (editandoId !== null) {
+      const atualizadas = pessoas.map(p =>
+        p.id === editandoId ? { ...p, nome, email, telefone } : p
+      )
+      setPessoas(atualizadas)
+      setEditandoId(null)
+    } else {
+      setPessoas([...pessoas, {
+        id: gerarProximoId(),
+        nome,
+        email,
+        telefone
+      }])
+    }
+
+    setNome('')
+    setEmail('')
+    setTelefone('')
+    setFormVisible(false)
+  }
+
+  function editarPessoa(pessoa) {
+    setNome(pessoa.nome)
+    setEmail(pessoa.email)
+    setTelefone(pessoa.telefone)
+    setEditandoId(pessoa.id)
+    setFormVisible(true)
+  }
+  
+  function confirmarExclusao(id) {
+  const confirmado = window.confirm('Tem certeza que deseja excluir esta pessoa?')
+  if (confirmado) {
+     setPessoas(pessoas.filter(p => p.id !== id))
+  }
+}
+ 
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+    <div className="container">
+      <h1>Cadastro</h1>
+
+      <div className="top-bar">
+        <button onClick={() => setFormVisible(!formVisible)}>
+          {formVisible ? 'X' : 'Adicionar'}
         </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
+
+        <input
+          type="text"
+          placeholder="Buscar por nome..."
+          value={busca}
+          onChange={e => setBusca(e.target.value)}
+          className="input-claro"
+        />
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+
+      {formVisible && (
+        <form onSubmit={handleSubmit} className="form">
+          <input
+            type="text"
+            placeholder="Nome"
+            value={nome}
+            onChange={e => setNome(e.target.value)}
+            className="input-claro"
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            className="input-claro"
+          />
+          <input
+            type="tel"
+            placeholder="Telefone"
+            value={telefone}
+            onChange={e => setTelefone(e.target.value)}
+            className="input-claro"
+          />
+          <button type="submit">{editandoId ? 'Salvar' : 'Adicionar'}</button>
+        </form>
+      )}
+
+      <div className="lista-pessoas">
+  {pessoasFiltradas.length === 0 && (
+    <p className="sem-resultados">Nenhuma pessoa encontrada! <br></br> Certifique-se que o nome foi digitado corretamente.</p>
+  )}
+
+  {pessoasFiltradas.map(pessoa => (
+    <div key={pessoa.id} className="pessoa">
+      <div className="info">
+        <span>{pessoa.id}</span>
+        <span>{pessoa.nome}</span>
+        <span>{pessoa.email}</span>
+        <span>{pessoa.telefone}</span>
+      </div>
+      <div className="acoes">
+        <button onClick={() => editarPessoa(pessoa)} title="Editar">
+          <img src="./src/icons/edit.png" alt="Editar" className="icone" />
+        </button>
+        <button onClick={() => confirmarExclusao(pessoa.id)} title="Deletar">
+          <img src="./src/icons/delete.png" alt="Deletar" className="icone-delete" />
+        </button>
+      </div>
+    </div>
+  ))}
+</div>
+
+    </div>
   )
 }
-
-export default App
