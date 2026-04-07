@@ -99,3 +99,86 @@ button:hover {
   text-align: center;
   opacity: 0.6;
 }
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  /* fundo escuro com blur */
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal {
+  /* efeito vidro */
+  background: rgba(30, 30, 30, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  color: #fff;
+  padding: 28px;
+  border-radius: 16px;
+  width: 320px;
+  text-align: center;
+
+  /* borda suave tipo vidro */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  /* sombra elegante */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.modal h3 {
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.modal p {
+  font-size: 14px;
+  color: #ccc;
+}
+
+.modal-botoes {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 25px;
+}
+
+/* botão cancelar mais clean */
+.cancelar {
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.cancelar:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* 🔥 mantém sua cor original */
+.deletar {
+  background: #e63946;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.deletar:hover {
+  background: #d6313e;
+}
